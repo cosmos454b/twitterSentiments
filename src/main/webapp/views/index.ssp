@@ -1,0 +1,97 @@
+<%@ val searchWord: String %>
+<%@ val polarityCounts: Tuple4[Float,Float,Float,Float] %>
+<%@ val positivePolarity: Float %>
+<%@ val result: Array[com.yogini.twitter.analyzer.PolarizedTweet] %>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Twitter Analytics</title>
+    <script src="../resources/d3.min.js"></script>
+    <script src="../resources/c3.min.js"></script>
+    <link href="../resources/css/c3.css" rel="stylesheet">
+     <link href="../resources/css/custom.css" rel="stylesheet">
+  </head>
+  <body>
+   <div class="container">
+      <div class="masthead">
+        <h2 class="text-muted">Twitter Analytics</h2>
+      </div>
+     <br/><br/><br/>
+      <div class="row">
+        <form class="navbar-form navbar-left" action="/" role="search">
+            <div class="form-group">
+              <input name="word" type="text" class="form-control" placeholder="Search">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+      </div>
+       <br/><br/><br/>
+       <div class="row">
+          <div id="chart1" class="col-lg-6"></div>
+          <div id="chart2" class="col-lg-6"></div>
+       </div> 
+        <br/><br/><br/>
+      <div class="row">
+        <div class="col-lg-12">
+            <table class="table">
+             <tr>
+                  <th>Date</th>
+                  <th>Tweet</th>
+                  <th>Polarity</th>
+                </tr>
+                     <% for(i <- 0 to result.length-1) {%>
+                    <tr>
+                       <td><%= result(i).timestamp%></td>
+                       <td><%= result(i).content%></td>
+                       <td><%= result(i).polarity%></td>
+                    </tr>
+                <%}%>
+                </table>
+       </div>
+      </div> 
+
+  </body>
+  <script>
+    var chart1 = c3.generate({
+    bindto: '#chart1',
+  data: {
+        columns: [
+            ['excited', <%=polarityCounts._1%>],
+            ['happy', <%=polarityCounts._2%>],
+            ['upset', <%=polarityCounts._3%>],
+            ['angry', <%=polarityCounts._4%>],
+        ],
+        colors: {
+            'excited': '#2CA02C',
+            'happy': '#1F77B4',
+            'upset': '#FF7F0E',
+            'angry': '#D62728'
+        },
+        type : 'donut',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    donut: {
+        title: "Mood"
+    }
+});
+var chart2 = c3.generate({
+    bindto: '#chart2',
+    data: {
+        columns: [
+            ['Positive Polarity', <%=positivePolarity%>]
+        ],
+        type: 'gauge',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    size: {
+        height: 180
+    }
+});
+   </script>
+</html>
